@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:second_trip_project/basic2-miniproject/MainScreen.dart';
-import 'package:second_trip_project/basic2-miniproject/SplashScreen.dart';
+
+import 'basic2-miniproject/MainScreen.dart';
+import 'basic2-miniproject/SplashScreen.dart';
+
 void main() {
   runApp(const MyApp());
 }
