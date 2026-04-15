@@ -63,7 +63,7 @@ class MyApp extends StatelessWidget {
         // 3. 경로 등록 (이걸 해둬야 톱니바퀴 눌렀을 때 이동이 돼!)
         routes: {
           '/mypage': (context) => const MyPageScreen(),
-          '/edit_profile': (context) => const EditProfileScreen(),
+          '/edit_profile': (context) => const EditProfileScreen(name: '', phone: '',),
           '/change_password': (context) => const ChangePasswordScreen(),
           '/my_posts': (context) => const MyPostsScreen(),
           '/inquiry': (context) => const InquiryScreen(),
