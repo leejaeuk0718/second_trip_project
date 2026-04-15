@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
   Widget build(BuildContext context) {
     // 이미지가 들어있는 AssetImage 객체를 생성합니다.
     // 프로젝트 루트의 assets/logo.png 경로에 이미지가 있어야 합니다.
-    const image = AssetImage('assets/logo.png');
+    const image = AssetImage('assets/images/logo.png');
 
     return Scaffold(
       backgroundColor: Colors.white, // 배경을 흰색으로 설정
