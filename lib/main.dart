@@ -68,9 +68,8 @@ class MyApp extends StatelessWidget {
         const Scaffold(body: Center(child: Text('DB ORM 테스트'))),
         '/todosMain': (context) =>
         const Scaffold(body: Center(child: Text('스프링 연결 연습'))),
-        // 변경
+        // 변경 하나만 사용
         '/hotel': (context) => const AccommodationListScreen(),
-        '/motel': (context) => const AccommodationListScreen(),
       }, // routes 맵 닫기
     ); // <- 여기에 소괄호 ')'를 넣어서 MaterialApp 위젯을 닫아주세요!
   }
