@@ -1,82 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:second_trip_project/screen/ChangePasswordScreen.dart';
-import 'package:second_trip_project/screen/EditProfileScreen.dart';
-import 'package:second_trip_project/screen/InquiryScreen.dart';
-import 'package:second_trip_project/screen/MainScreen.dart';
-import 'package:second_trip_project/screen/MyPageScreen.dart';
-import 'package:second_trip_project/screen/MyPostsScreen.dart';
-import 'package:second_trip_project/screen/SplashScreen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'loging/screens/list/accommodation_list_screen.dart';
-import 'providers/accommodation_providers.dart';
 
-// 변경
-void main() async {
+// 라우팅 설정 파일 import
+import 'package:second_trip_project/screen/RoutingScreen.dart';
+
+// 각 팀원 컨트롤러 import
+import 'package:second_trip_project/package/controller/package_controller.dart';
+import 'package:second_trip_project/car/controller/calendar_controller.dart';
+import 'package:second_trip_project/car/controller/rent_comp_controller.dart';
+
+// [필수] 컨트롤러 클래스 정의 (각 파일에 extends ChangeNotifier가 꼭 있어야 합니다)
+// 여기에 직접 정의하거나, 각 파일에서 ChangeNotifier를 상속받았는지 확인하세요.
+
+class PackageController extends ChangeNotifier {}
+
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load(fileName: '.env');
-  final prefs = await SharedPreferences.getInstance();
 
   runApp(
-    ProviderScope(
-      overrides: [
-        sharedPreferencesProvider.overrideWithValue(prefs),
+    // 1. MultiProvider를 최상단에 배치하여 모든 화면이 데이터를 공유하게 합니다.
+    MultiProvider(
+      providers: [
+        // 진주님 패키지 데이터
+        ChangeNotifierProvider<PackageController>(create: (_) => PackageController()),
+        // 태흔님 렌터카 데이터 (업체 및 달력)
+        ChangeNotifierProvider<RentCompController>(create: (_) => RentCompController()),
+        ChangeNotifierProvider<CalendarController>(create: (_) => CalendarController()),
       ],
-      child: const MyApp(),
+      // 2. 성규님의 라우팅 설정이 담긴 RoutingScreen을 실행합니다.
+      child: const RoutingScreen(),
     ),
   );
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-
-      title: 'Travel-Hub Test',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF004680)),
-        useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
-      ),
-      // 1. 일단 마이페이지가 바로 뜨도록 설정
-      //home: const MyPageScreen(),
-
-      // 2. 대신 아래의 initialRoute가 앱의 진짜 시작점 역할을 하게 됩니다.
-      initialRoute: '/',
-
-      // 3. 경로 등록 (이걸 해둬야 톱니바퀴 눌렀을 때 이동이 돼!)
-      routes: {
-        '/mypage': (context) => const MyPageScreen(),
-        // '/edit_profile': (context) => const EditProfileScreen(),
-        '/change_password': (context) => const ChangePasswordScreen(),
-        '/my_posts': (context) => const MyPostsScreen(),
-        '/inquiry': (context) => const InquiryScreen(),
-        // 2. 성규님 작업 (깔끔하게 정리)
-        '/': (context) => const SplashScreen(), // 스플래시 화면
-        '/main': (context) => const MainScreen(), // 메인 화면
-
-        // --- 메인 화면 버튼 라우트 ---
-        '/login': (context) =>
-        const Scaffold(body: Center(child: Text('로그인 화면'))),
-        '/signup': (context) =>
-        const Scaffold(body: Center(child: Text('회원가입 화면'))),
-
-        // --- 연습용 및 숙소 카테고리 라우트 ---
-        '/publicDataTest': (context) =>
-        const Scaffold(body: Center(child: Text('공공데이터 테스트'))),
-        '/mapBasic1': (context) =>
-        const Scaffold(body: Center(child: Text('지도 서비스 테스트'))),
-        '/dbTest2': (context) =>
-        const Scaffold(body: Center(child: Text('DB ORM 테스트'))),
-        '/todosMain': (context) =>
-        const Scaffold(body: Center(child: Text('스프링 연결 연습'))),
-        // 변경 하나만 사용하기123123
-        '/hotel': (context) => const AccommodationListScreen(),
-      }, // routes 맵 닫기
-    ); // <- 여기에 소괄호 ')'를 넣어서 MaterialApp 위젯을 닫아주세요!
-  }
 }

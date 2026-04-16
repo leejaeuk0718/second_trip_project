@@ -1,8 +1,17 @@
 import 'package:flutter/material.dart';
 
+// [팀원별 실제 화면 Import]
+// 렌터카 파트 (태흔님)
 import '../car/screen/car_rent_home_screen.dart';
 import '../car/screen/table_calendar_screen.dart';
+
+// 숙소 파트 (재욱님)
 import '../loging/screens/list/accommodation_list_screen.dart';
+
+// 패키지 파트 (진주님)
+import '../package/screen/package_list_screen.dart';
+
+// 유저 및 공통 화면 (성규님 & 지효님)
 import 'ChangePasswordScreen.dart';
 import 'EditProfileScreen.dart';
 import 'InquiryScreen.dart';
@@ -28,6 +37,7 @@ class RoutingScreen extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
+        // [공통 및 유저]
         '/': (context) => const SplashScreen(),
         '/main': (context) => const MainScreen(),
         '/login': (context) => const LoginScreen(),
@@ -37,24 +47,17 @@ class RoutingScreen extends StatelessWidget {
         '/change_password': (context) => const ChangePasswordScreen(),
         '/my_posts': (context) => const MyPostsScreen(),
         '/inquiry': (context) => const InquiryScreen(),
-        '/car_rent': (context) => const TableCalendarScreen(),
-        '/car_rent_home': (context) => const CarRentHomeScreen(),
+
+        // [렌터카 - 태흔님]
+        '/rent_car': (context) => const CarRentHomeScreen(),    // 메인 버튼 연결용
+        '/car_calendar': (context) => const TableCalendarScreen(),
+
+        // [숙소 - 재욱님]
         '/hotel': (context) => const AccommodationListScreen(),
         '/motel': (context) => const AccommodationListScreen(),
 
-        // --- 연습용 및 숙소 카테고리 라우트 ---
-        '/publicDataTest': (context) =>
-            const Scaffold(body: Center(child: Text('공공데이터 테스트'))),
-        '/mapBasic1': (context) =>
-            const Scaffold(body: Center(child: Text('지도 서비스 테스트'))),
-        '/dbTest2': (context) =>
-            const Scaffold(body: Center(child: Text('DB ORM 테스트'))),
-        '/todosMain': (context) =>
-            const Scaffold(body: Center(child: Text('스프링 연결 연습'))),
-        '/hotel': (context) =>
-            const Scaffold(body: Center(child: Text('호텔·리조트 화면'))),
-        '/motel': (context) =>
-            const Scaffold(body: Center(child: Text('모텔 화면'))),
+        // [패키지 - 진주님]
+        '/package_list': (context) => const PackageListScreen(),
       },
     );
   }
