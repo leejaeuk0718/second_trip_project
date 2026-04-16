@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 // [팀원별 실제 화면 Import]
 // 렌터카 파트 (태흔님)
+import '../airport/screen/my_reservation_screen.dart';
+import '../airport/screen/search_screen.dart';
 import '../car/screen/car_rent_home_screen.dart';
 import '../car/screen/table_calendar_screen.dart';
 
@@ -60,6 +62,10 @@ class RoutingScreen extends StatelessWidget {
 
         // [패키지 - 진주님]
         '/package_list': (context) => const PackageListScreen(),
+
+        // [항공 - 황혜은]
+        '/airport':    (context) => const SearchScreen(),
+        '/myairport':    (context) => const MyReservationScreen(),
       },
     );
   }
