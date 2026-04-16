@@ -5,6 +5,7 @@ import 'package:second_trip_project/screen/RoutingScreen.dart';
 
 import 'car/controller/calendar_controller.dart';
 import 'car/controller/rent_comp_controller.dart';
+import 'car/controller/rental_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,9 @@ Future<void> main() async {
         ),
         ChangeNotifierProvider(
           create: (_) => CalendarController(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RentalController(),
         ),
       ],
       child: const RoutingScreen(),
