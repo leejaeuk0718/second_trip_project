@@ -15,6 +15,9 @@ import 'package:second_trip_project/car/controller/rent_comp_controller.dart';
 // 숙소 파트 import
 import 'package:second_trip_project/providers/accommodation_providers.dart';
 
+import 'airport/controller/flight_controller.dart';
+import 'airport/controller/reservation_controller.dart';
+
 class PackageController extends ChangeNotifier {}
 
 Future<void> main() async {
@@ -36,6 +39,11 @@ Future<void> main() async {
               create: (_) => RentCompController()),
           ChangeNotifierProvider<CalendarController>(
               create: (_) => CalendarController()),
+          // 항공 추가 부분
+          ChangeNotifierProvider<FlightController>(
+              create: (_) => FlightController()),
+          ChangeNotifierProvider<ReservationController>(
+              create: (_) => ReservationController()),
         ],
 
         // RoutingScreen에서 라우트 관리
