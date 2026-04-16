@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../car/screen/car_rent_home_screen.dart';
 import '../car/screen/table_calendar_screen.dart';
+import '../loging/screens/list/accommodation_list_screen.dart';
 import 'ChangePasswordScreen.dart';
 import 'EditProfileScreen.dart';
 import 'InquiryScreen.dart';
@@ -33,7 +34,9 @@ class RoutingScreen extends StatelessWidget {
         '/inquiry': (context) => const InquiryScreen(),
         '/car_rent': (context) => const TableCalendarScreen(),
         '/car_rent_home': (context) => const CarRentHomeScreen(),
-
+// 변경
+        '/hotel': (context) => const AccommodationListScreen(),
+        '/motel': (context) => const AccommodationListScreen(),
 
       },
     );
