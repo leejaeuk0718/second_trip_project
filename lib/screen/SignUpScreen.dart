@@ -228,17 +228,34 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 const SizedBox(height: 40),
 
                 SizedBox(
-                  width: double.infinity,
                   height: 56,
-                  child: ElevatedButton(
-                    onPressed: _attemptSignUp,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: classicBlue,
-                      foregroundColor: Colors.white,
-                      elevation: 0,
+                  child: OutlinedButton(
+                    onPressed: () async { // ⭐ 1. async 추가
+                      String email = emailController.text.trim();
+
+                      if (email.isEmpty) {
+                        _showSnackBar("이메일을 입력해주세요.");
+                      } else if (!_isValidEmail(email)) {
+                        _showSnackBar("올바른 이메일 형식이 아닙니다. (예: user@mail.com)");
+                      } else {
+                        // ⭐ 2. 진짜 서버한테 물어보기!
+                        bool isDuplicate = await _memberService.checkEmailDuplicate(email);
+
+                        if (isDuplicate) {
+                          // 중복된 경우
+                          _showSnackBar("이미 사용 중인 이메일입니다. 다른 이메일을 입력해주세요.");
+                        } else {
+                          // 중복이 아닌 경우
+                          _showSnackBar("사용 가능한 이메일입니다.", backgroundColor: classicBlue);
+                        }
+                      }
+                    },
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: classicBlue),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      foregroundColor: classicBlue,
                     ),
-                    child: const Text('가입하기', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                    child: const Text('중복확인', style: TextStyle(fontWeight: FontWeight.bold)),
                   ),
                 ),
                 const SizedBox(height: 20),
