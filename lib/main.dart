@@ -9,6 +9,7 @@ import 'package:second_trip_project/screen/RoutingScreen.dart';
 import 'package:second_trip_project/package/controller/package_controller.dart';
 import 'package:second_trip_project/car/controller/calendar_controller.dart';
 import 'package:second_trip_project/car/controller/rent_comp_controller.dart';
+import 'package:second_trip_project/car/controller/rental_controller.dart';
 
 // [필수] 컨트롤러 클래스 정의 (각 파일에 extends ChangeNotifier가 꼭 있어야 합니다)
 // 여기에 직접 정의하거나, 각 파일에서 ChangeNotifier를 상속받았는지 확인하세요.
@@ -28,6 +29,7 @@ Future<void> main() async {
         // 태흔님 렌터카 데이터 (업체 및 달력)
         ChangeNotifierProvider<RentCompController>(create: (_) => RentCompController()),
         ChangeNotifierProvider<CalendarController>(create: (_) => CalendarController()),
+        ChangeNotifierProvider<RentalController>(create: (_) => RentalController()),
       ],
       // 2. 성규님의 라우팅 설정이 담긴 RoutingScreen을 실행합니다.
       child: const RoutingScreen(),

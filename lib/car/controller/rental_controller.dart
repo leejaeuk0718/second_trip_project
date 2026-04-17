@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../constants.dart';
 import '../model/rental_model.dart';
@@ -16,9 +16,10 @@ class RentalController with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
 
+  final _storage = const FlutterSecureStorage();
+
   Future<String?> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString('accessToken');
+    return await _storage.read(key: 'accessToken');
   }
 
   // 해당 기간에 예약 불가 차량 id 목록 조회
@@ -44,13 +45,12 @@ class RentalController with ChangeNotifier {
 
   // 예약 생성
   Future<RentalModel?> createRental(int carId, String startDate, String endDate) async {
-    // TODO: 로그인 연동 후 아래 주석 해제하고 임시 userId 제거
-    // final token = await _getToken();
-    // if (token == null) {
-    //   _errorMessage = '로그인이 필요합니다.';
-    //   notifyListeners();
-    //   return null;
-    // }
+    final token = await _getToken();
+    if (token == null) {
+      _errorMessage = '로그인이 필요합니다.';
+      notifyListeners();
+      return null;
+    }
 
     _isLoading = true;
     _errorMessage = null;
@@ -59,22 +59,21 @@ class RentalController with ChangeNotifier {
     try {
       final response = await dio.post(
         '/api/rental',
-        data: {'carId': carId, 'startDate': startDate, 'endDate': endDate, 'userId': 1},
-        // TODO: 로그인 연동 후 아래 주석 해제
-        // options: Options(headers: {'Authorization': 'Bearer $token'}),
+        data: {'carId': carId, 'startDate': startDate, 'endDate': endDate},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
+      debugPrint('예약 응답: ${response.data}');
       final rental = RentalModel.fromJson(response.data);
       _myRentals.insert(0, rental);
-      notifyListeners();
       return rental;
     } catch (e) {
       _errorMessage = '예약 실패: $e';
       debugPrint('예약 생성 실패: $e');
+      return null;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
     }
-
-    _isLoading = false;
-    notifyListeners();
-    return null;
   }
 
   // 내 예약 목록 조회

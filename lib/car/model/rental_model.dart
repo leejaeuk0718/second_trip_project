@@ -22,10 +22,21 @@ class RentalModel {
       id: json['id'],
       carId: json['carId'],
       carName: json['carName'] ?? '',
-      startDate: json['startDate'],
-      endDate: json['endDate'],
+      startDate: _parseDate(json['startDate']),
+      endDate: _parseDate(json['endDate']),
       totalPrice: json['totalPrice'] ?? 0,
       status: json['status'],
     );
+  }
+
+  static String _parseDate(dynamic value) {
+    if (value is String) return value;
+    if (value is List) {
+      final y = value[0];
+      final m = value[1].toString().padLeft(2, '0');
+      final d = value[2].toString().padLeft(2, '0');
+      return '$y-$m-$d';
+    }
+    return '';
   }
 }
