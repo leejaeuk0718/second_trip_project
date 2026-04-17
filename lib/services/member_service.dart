@@ -6,6 +6,24 @@ import 'package:shared_preferences/shared_preferences.dart';
 class MemberService {
   static String get baseUrl => dotenv.env['BASE_URL'] ?? 'http://10.0.2.2:8080';
 
+  // ⭐ 이메일 중복 확인 기능 추가
+  Future<bool> checkEmailDuplicate(String email) async {
+    try {
+      // 서버의 중복 확인 API 주소로 GET 요청을 보내요
+      final url = Uri.parse('$baseUrl/api/member/exists/$email');
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        // 서버가 true를 주면 "이미 있다", false를 주면 "없다"는 뜻!
+        return jsonDecode(response.body) == true;
+      }
+      return false;
+    } catch (e) {
+      print('중복 확인 에러: $e');
+      return false;
+    }
+  }
+
   Future<Map<String, dynamic>?> login(String mid, String mpw) async {
     try {
       final url = Uri.parse('$baseUrl/api/member/login');
