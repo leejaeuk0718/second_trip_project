@@ -24,6 +24,18 @@ import 'MyPostsScreen.dart';
 import 'SignUpScreen.dart';
 import 'SplashScreen.dart';
 import 'LogoutMyPageScreen.dart';
+import 'WishlistScreen.dart';
+
+//공지사항 및 검색(재현)
+
+import 'package:second_trip_project/screen/TotalSearchScreen.dart';
+
+import 'package:second_trip_project/screen/CommunityDetailScreen.dart';
+import 'package:second_trip_project/screen/CommunityScreen.dart';
+import 'package:second_trip_project/screen/CommunityWriteScreen.dart';
+import 'package:second_trip_project/screen/NoticeDetailScreen.dart';
+import 'package:second_trip_project/screen/NoticeListScreen.dart';
+
 
 class RoutingScreen extends StatelessWidget {
   const RoutingScreen({super.key});
@@ -46,8 +58,10 @@ class RoutingScreen extends StatelessWidget {
         '/login': (context) => const LoginScreen(),
         '/signup': (context) => const SignUpScreen(),
         '/logout_mypage': (context) => const LogoutMyPageScreen(),
-        '/mypage': (context) => const MyPageScreen(userName: '', userEmail: '',),
+        '/favorite': (context) => const WishlistScreen(), // 찜 목록 경로 추가
+        '/mypage': (context) => const MyPageScreen(userName: '사용자', userEmail: ''),
         '/edit_profile': (context) => const EditProfileScreen(name: '', phone: ''),
+
         '/change_password': (context) => const ChangePasswordScreen(),
         '/my_posts': (context) => const MyPostsScreen(),
         '/inquiry': (context) => const InquiryScreen(),
@@ -55,6 +69,16 @@ class RoutingScreen extends StatelessWidget {
         // [렌터카 - 태흔님]
         '/car_rent_home': (context) => const CarRentHomeScreen(),
         '/car_calendar': (context) => const TableCalendarScreen(),
+
+        // 검색 화면 경로 등록
+        '/search': (context) => const TotalSearchScreen(),
+
+        // 공지사항및 게시판
+        '/notice': (context) => const NoticeListScreen(),
+        '/notice_detail': (context) => const NoticeDetailScreen(),
+        '/community': (context) => const CommunityScreen(),
+        '/community_detail': (context) => const CommunityDetailScreen(),
+        '/community_write': (context) => const CommunityWriteScreen(),
 
         // [숙소 - 재욱님]
         '/hotel': (context) => const AccommodationListScreen(),
