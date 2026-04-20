@@ -24,8 +24,8 @@ class CarRentalReservationDTO {
       id: json['id'],
       carId: json['carId'],
       carName: json['carName'] ?? '',
-      startDate: formatDate(json['startDate'], showWeekDay: false, separator: '-'),
-      endDate: formatDate(json['endDate'], showWeekDay: false, separator: '-'),
+      startDate: formatDate(DateTime.parse(json['startDate'].toString()), showWeekDay: false, separator: '-'),
+      endDate: formatDate(DateTime.parse(json['endDate'].toString()), showWeekDay: false, separator: '-'),
       totalPrice: json['totalPrice'] ?? 0,
       status: json['status'],
     );

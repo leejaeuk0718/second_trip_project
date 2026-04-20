@@ -38,7 +38,15 @@ class _MyReservationScreenState extends State<MyReservationScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      // ✅ [변경 전] _tempMid 하드코딩
+      // ✅ [변경 후] SharedPreferences 에서 가져오기
+      final prefs = await SharedPreferences.getInstance();
+      _mid = prefs.getString('userMid') ?? '';
+      debugPrint('[MyReservationScreen] 예약 목록 조회 시작 → mid: $_mid');
+      context.read<ReservationController>()
+          .fetchReservations(_mid);
+
       switch (widget.type) {
         case BookingType.flight:
           context.read<ReservationController>().fetchReservations(_tempMid);
@@ -55,14 +63,6 @@ class _MyReservationScreenState extends State<MyReservationScreen> {
         case BookingType.hotel:
           break;
       }
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      // ✅ [변경 전] _tempMid 하드코딩
-      // ✅ [변경 후] SharedPreferences 에서 가져오기
-      final prefs = await SharedPreferences.getInstance();
-      _mid = prefs.getString('userMid') ?? '';
-      debugPrint('[MyReservationScreen] 예약 목록 조회 시작 → mid: $_mid');
-      context.read<ReservationController>()
-          .fetchReservations(_mid);
     });
   }
 
