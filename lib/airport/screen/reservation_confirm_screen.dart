@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:second_trip_project/main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/member_service.dart';
 import '../constants/airport_constants.dart';
@@ -256,7 +257,8 @@ class _ReservationConfirmScreenState extends State<ReservationConfirmScreen> {
                               onPressed: () {
                                 debugPrint('[ReservationConfirmScreen] 검색화면으로 전체 복귀');
                                 // 스택 전체 제거 → SearchScreen (첫 화면)으로 이동
-                                Navigator.of(context).popUntil((route) => route.isFirst);
+                                // Navigator.of(context).popUntil((route) => route.isFirst);
+                                Navigator.pushReplacementNamed(context, '/main');
                               },
                               child: const Text('확인'),
                             ),
