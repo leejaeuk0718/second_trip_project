@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../common/constants/app_colors.dart';
+import '../../common/widget/common_button.dart';
 import '../constants/airport_constants.dart';
 import '../controller/flight_controller.dart';
 import '../model/flight_item.dart';
 import '../utils/format_utils.dart';
-import 'flight_list_screen.dart';
 import 'reservation_screen.dart';
 
+/// 항공편 상세 화면
+/// - 선택한 가는편 표시
+/// - 왕복인 경우 오는편 선택
+/// - 항공권 요약 및 예약 버튼
 class FlightDetailScreen extends StatefulWidget {
   const FlightDetailScreen({super.key});
 
@@ -18,51 +22,25 @@ class FlightDetailScreen extends StatefulWidget {
 
 class _FlightDetailScreenState extends State<FlightDetailScreen> {
 
-  // ── 포맷 메서드 ───────────────────────────────────────────
-  String _formatTime(String? time) {
-    if (time == null || time.length < 12) return '-';
-    return '${time.substring(8, 10)}:${time.substring(10, 12)}';
-  }
-
-  String _formatPrice(int price) {
-    return '${price.toString().replaceAllMapped(
-      RegExp(r'(\d)(?=(\d{3})+(?!\d))'),
-          (m) => '${m[1]},',
-    )}원';
-  }
-
-  String _duration(String? dep, String? arr) {
-    if (dep == null || arr == null ||
-        dep.length < 12 || arr.length < 12) return '-';
-    final d = DateTime.parse(
-        '${dep.substring(0, 4)}-${dep.substring(4, 6)}-${dep.substring(6, 8)} '
-            '${dep.substring(8, 10)}:${dep.substring(10, 12)}:00');
-    final a = DateTime.parse(
-        '${arr.substring(0, 4)}-${arr.substring(4, 6)}-${arr.substring(6, 8)} '
-            '${arr.substring(8, 10)}:${arr.substring(10, 12)}:00');
-    final diff = a.difference(d);
-    return '${diff.inHours}시간 ${diff.inMinutes % 60}분';
-  }
-
+  // ── API용 날짜 포맷 ───────────────────────────────────────
   String _formatDateApi(DateTime date) {
     return '${date.year}'
         '${date.month.toString().padLeft(2, '0')}'
         '${date.day.toString().padLeft(2, '0')}';
   }
 
+  // ── 표시용 날짜 포맷 ──────────────────────────────────────
   String _formatDateDisplay(DateTime? date) {
     if (date == null) return '-';
     const days = ['월', '화', '수', '목', '금', '토', '일'];
     return '${date.month}.${date.day} ${days[date.weekday - 1]}';
   }
 
-  // ── 오는편 항공편 조회 (SearchScreen에서 선택한 날짜로) ───
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final controller = context.read<FlightController>();
-      // ✅ 왕복이고 retDate 있으면 자동으로 오는편 조회
       if (controller.isRoundTrip && controller.retDate != null) {
         controller.fetchReturnFlights(
           retPlandTime: _formatDateApi(controller.retDate!),
@@ -82,6 +60,9 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
       );
     }
 
+    final totalPassengers =
+        controller.adultCount + controller.childCount + controller.infantCount;
+
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -95,28 +76,26 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
           children: [
 
             // ── 선택한 가는편 ─────────────────────────────
-            // ✅ 3. 타이틀 + [변경] 버튼
             _sectionTitleWithAction(
               title: '선택한 가는편',
-              onTap: () => Navigator.pop(context), // 리스트로 돌아가기
+              onTap: () => Navigator.pop(context),
             ),
             _flightCard(dep),
 
             const SizedBox(height: 24),
 
-            // ── 왕복이면 오는편 선택 ──────────────────────
+            // ── 왕복: 오는편 선택 ─────────────────────────
             if (controller.isRoundTrip) ...[
-
-              // ✅ 2. "무선" 오타 수정 + [변경] 버튼
               _sectionTitleWithAction(
                 title: '오는편 선택'
-                    '${controller.retDate != null ? ' · ${_formatDateDisplay(controller.retDate)}' : ''}',
-                onTap: null, // 오는편은 변경 불필요
+                    '${controller.retDate != null
+                    ? ' · ${_formatDateDisplay(controller.retDate)}'
+                    : ''}',
+                onTap: null,
               ),
 
               const SizedBox(height: 12),
 
-              // 오는편 리스트
               if (controller.retItems.isEmpty)
                 const Center(
                   child: Padding(
@@ -127,8 +106,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
               else
                 ...controller.retItems.map((retItem) {
                   final isSelected =
-                      controller.selectedRet?.flightNo ==
-                          retItem.flightNo;
+                      controller.selectedRet?.flightNo == retItem.flightNo;
                   return GestureDetector(
                     onTap: () => controller.selectRet(retItem),
                     child: Container(
@@ -136,8 +114,8 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
                       decoration: BoxDecoration(
                         border: Border.all(
                           color: isSelected
-                              ? Colors.blue
-                              : Colors.grey.shade300,
+                              ? AppColors.primary
+                              : AppColors.border,
                           width: isSelected ? 2 : 1,
                         ),
                         borderRadius: BorderRadius.circular(8),
@@ -160,33 +138,32 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade50,
+                  color: AppColors.backgroundGrey,
                   borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade200),
+                  border: Border.all(color: AppColors.border),
                 ),
                 child: Column(
                   children: [
-                    // 가는편 요약
+
+                    // 가는편 요약 행
                     _summaryRow(
                       label: '가는편',
-                      time: '${_formatTime(dep.depPlandTime)} - '
-                          '${_formatTime(dep.arrPlandTime)}',
+                      time: '${FormatUtils.time(dep.depPlandTime)} - '
+                          '${FormatUtils.time(dep.arrPlandTime)}',
                       info: '${dep.depAirportNm ?? '-'}, '
                           '${dep.airlineNm ?? '-'} ${dep.flightNo ?? '-'}',
                       price: dep.price,
                     ),
 
-                    // 왕복이면 오는편 요약
+                    // 왕복: 오는편 요약 행
                     if (controller.isRoundTrip &&
                         controller.selectedRet != null) ...[
                       const Divider(height: 20),
                       _summaryRow(
                         label: '오는편',
-                        time:
-                        '${_formatTime(controller.selectedRet!.depPlandTime)} - '
-                            '${_formatTime(controller.selectedRet!.arrPlandTime)}',
-                        info:
-                        '${controller.selectedRet!.depAirportNm ?? '-'}, '
+                        time: '${FormatUtils.time(controller.selectedRet!.depPlandTime)} - '
+                            '${FormatUtils.time(controller.selectedRet!.arrPlandTime)}',
+                        info: '${controller.selectedRet!.depAirportNm ?? '-'}, '
                             '${controller.selectedRet!.airlineNm ?? '-'} '
                             '${controller.selectedRet!.flightNo ?? '-'}',
                         price: controller.selectedRet!.price,
@@ -200,30 +177,32 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text('발급 수수료',
-                            style: TextStyle(color: AppColors.textSecondary)),
-                        // ✅ [변경 전] '1,000원' 하드코딩
-                        // ✅ [변경 후] AirportConstants 사용
+                            style: TextStyle(
+                                color: AppColors.textSecondary)),
                         Text(
                           FormatUtils.price(AirportConstants.issueFee),
-                          style: const TextStyle(color: AppColors.textSecondary),
+                          style: const TextStyle(
+                              color: AppColors.textSecondary),
                         ),
                       ],
                     ),
 
                     const SizedBox(height: 8),
 
-                    // 총 금액
+                    // 결제 예상금액
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Text('결제 예상금액',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
                         Text(
-                          // ✅ [변경 전] _formatPrice() + 1000 하드코딩
-                          // ✅ [변경 후] FormatUtils + AirportConstants 사용
+                          '결제 예상금액 ($totalPassengers명)',
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold),
+                        ),
+                        Text(
                           FormatUtils.price(
-                            dep.price +
-                                (controller.selectedRet?.price ?? 0) +
+                            (dep.price +
+                                (controller.selectedRet?.price ?? 0)) *
+                                totalPassengers +
                                 AirportConstants.issueFee,
                           ),
                           style: const TextStyle(
@@ -241,15 +220,8 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
               const SizedBox(height: 32),
 
               // ── 항공권 예약 버튼 ──────────────────────
-              ElevatedButton(
-                // 로그인 체크 전
-                // onPressed: () {
-                //   Navigator.push(
-                //     context,
-                //     MaterialPageRoute(
-                //         builder: (_) => const ReservationScreen()),
-                //   );
-                // },
+              CommonButton(
+                text: '항공권 예약',
                 onPressed: () async {
                   final prefs = await SharedPreferences.getInstance();
                   final isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
@@ -258,22 +230,23 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
 
                   if (!isLoggedIn) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('로그인이 필요한 서비스입니다.')),
+                      const SnackBar(
+                          content: Text('로그인이 필요한 서비스입니다.')),
                     );
 
-                    // ✅ [변경] pushNamed → push + await 로 결과 기다리기
                     await Navigator.pushNamed(context, '/login');
 
-                    // ✅ 로그인 후 돌아왔을 때 다시 체크
                     if (!mounted) return;
-                    final prefsAfter = await SharedPreferences.getInstance();
-                    final isLoggedInAfter = prefsAfter.getBool('isLoggedIn') ?? false;
+                    final prefsAfter =
+                    await SharedPreferences.getInstance();
+                    final isLoggedInAfter =
+                        prefsAfter.getBool('isLoggedIn') ?? false;
 
                     if (isLoggedInAfter) {
-                      // ✅ 로그인 성공 → 예약 화면으로 이동
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const ReservationScreen()),
+                        MaterialPageRoute(
+                            builder: (_) => const ReservationScreen()),
                       );
                     }
                     return;
@@ -281,35 +254,19 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
 
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const ReservationScreen()),
+                    MaterialPageRoute(
+                        builder: (_) => const ReservationScreen()),
                   );
                 },
-
-
-
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  '항공권 예약',
-                  style: TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                ),
               ),
             ],
-
           ],
         ),
       ),
     );
   }
 
-  // ── 섹션 타이틀 + 변경 버튼 ──────────────────────────────
+  // ── 섹션 타이틀 + [변경] 버튼 ────────────────────────────
   Widget _sectionTitleWithAction({
     required String title,
     VoidCallback? onTap,
@@ -326,16 +283,13 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
               fontWeight: FontWeight.bold,
             ),
           ),
-          // ✅ 3. [변경] 버튼
           if (onTap != null)
             GestureDetector(
               onTap: onTap,
               child: const Text(
                 '변경',
                 style: TextStyle(
-                  color: Colors.blue,
-                  fontSize: 14,
-                ),
+                    color: AppColors.primary, fontSize: 14),
               ),
             ),
         ],
@@ -361,24 +315,35 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  '${_formatTime(item.depPlandTime)} - '
-                      '${_formatTime(item.arrPlandTime)}',
+                  '${FormatUtils.time(item.depPlandTime)} - '
+                      '${FormatUtils.time(item.arrPlandTime)}',
                   style: const TextStyle(fontSize: 16),
                 ),
                 Text(
-                  _duration(item.depPlandTime, item.arrPlandTime),
+                  FormatUtils.duration(
+                      item.depPlandTime, item.arrPlandTime),
                   style: const TextStyle(
-                      color: Colors.grey, fontSize: 12),
+                      color: AppColors.textSecondary, fontSize: 12),
                 ),
               ],
             ),
-            Text(
-              _formatPrice(item.price),
-              style: const TextStyle(
-                color: Colors.blue,
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  FormatUtils.price(item.price),
+                  style: const TextStyle(
+                    color: AppColors.primary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+                const Text(
+                  '성인 1인 기준',
+                  style: TextStyle(
+                      fontSize: 11, color: AppColors.textSecondary),
+                ),
+              ],
             ),
           ],
         ),
@@ -386,7 +351,7 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
     );
   }
 
-  // ── 요약 행 ───────────────────────────────────────────────
+  // ── 항공권 요약 행 ────────────────────────────────────────
   Widget _summaryRow({
     required String label,
     required String time,
@@ -402,17 +367,17 @@ class _FlightDetailScreenState extends State<FlightDetailScreen> {
             children: [
               Text(label,
                   style: const TextStyle(
-                      color: Colors.grey, fontSize: 12)),
+                      color: AppColors.textSecondary, fontSize: 12)),
               Text(time,
                   style: const TextStyle(fontWeight: FontWeight.bold)),
               Text(info,
                   style: const TextStyle(
-                      color: Colors.grey, fontSize: 12)),
+                      color: AppColors.textSecondary, fontSize: 12)),
             ],
           ),
         ),
         Text(
-          _formatPrice(price),
+          FormatUtils.price(price),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
       ],

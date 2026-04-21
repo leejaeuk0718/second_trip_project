@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-import '../services/member_service.dart'; // ⭐ MemberService 임포트 확인!
+import '../services/member_service.dart';
 import 'MyPageScreen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -19,8 +19,10 @@ class _MainScreenState extends State<MainScreen> {
   bool isLoggedIn = false;
   String userName = "";
   String userEmail = "";
+  String userPhone = "";
+  String userRole = ""; // ⭐ 권한(Role) 변수
 
-  final MemberService _memberService = MemberService(); // ⭐ 서비스 인스턴스 생성
+  final MemberService _memberService = MemberService();
 
   final List<String> _imgList = [
     'assets/images/main_thumbnail5.png',
@@ -34,7 +36,7 @@ class _MainScreenState extends State<MainScreen> {
   void initState() {
     super.initState();
     _pageController = PageController(initialPage: 5000);
-    _checkLoginStatus(); // 앱 시작 시 상태 확인
+    _checkLoginStatus();
 
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       if (_pageController.hasClients) {
@@ -48,20 +50,20 @@ class _MainScreenState extends State<MainScreen> {
 
   // ⭐ 저장소에서 로그인 정보를 가져와 화면을 갱신하는 함수
   Future<void> _checkLoginStatus() async {
-    // 1. 이제 SharedPreferences(옛날 창고)는 아예 무시해!
-    // final SharedPreferences prefs = await SharedPreferences.getInstance(); (X)
-
-    // 2. 오직 MemberService(새 보안 창고)에만 물어보기
     final bool status = await _memberService.checkLoginStatus();
     final userInfo = await _memberService.getUserInfo();
 
-    setState(() {
-      isLoggedIn = status; // 새 창고가 false면 여기도 무조건 false!
-      userName = userInfo['name'] ?? "";
-      userEmail = userInfo['email'] ?? "";
-    });
+    if (mounted) {
+      setState(() {
+        isLoggedIn = status;
+        userName = userInfo['name'] ?? "";
+        userEmail = userInfo['email'] ?? "";
+        userPhone = userInfo['phone'] ?? "010-0000-0000";
+        userRole = userInfo['role'] ?? "USER"; // ⭐ 권한 가져오기
+      });
+    }
 
-    print("현재 로그인 상태 체크: $isLoggedIn"); // 로그로 확인용
+    print("현재 로그인 상태 체크: $isLoggedIn / 권한: $userRole / 번호: $userPhone");
   }
 
   @override
@@ -110,13 +112,32 @@ class _MainScreenState extends State<MainScreen> {
             ? Center(
           child: Padding(
             padding: const EdgeInsets.only(right: 16.0),
-            child: Text(
-              '$userName님, 안녕하세요!',
-              style: const TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
-                fontSize: 13,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // ⭐ 상단 배지 확인 로직
+                if (userRole == "ADMIN")
+                  Container(
+                    margin: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFF7323F),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      "ADMIN",
+                      style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                Text(
+                  '$userName님, 안녕하세요!',
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
             ),
           ),
         )
@@ -141,9 +162,6 @@ class _MainScreenState extends State<MainScreen> {
       ],
     );
   }
-
-  // ... (HeaderImage, Grid, MenuButton 등 중간 위젯들은 동일하므로 생략) ...
-  // (생략된 부분은 기존 코드와 같습니다.)
 
   Widget _buildHeaderImage() {
     return SizedBox(
@@ -241,31 +259,33 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 
-  // ⭐ 하단 네비게이션 로직 전면 수정
   Widget _buildBottomNav(BuildContext context) {
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       selectedItemColor: const Color(0xFFF7323F),
       unselectedItemColor: Colors.grey,
-      currentIndex: 0, // 현재 페이지 인덱스 관리 필요 시 사용
+      currentIndex: 0,
       onTap: (index) async {
         if (index == 1) {
           Navigator.pushNamed(context, '/search');
         } else if (index == 2) {
           Navigator.pushNamed(context, '/nearby');
         } else if (index == 3) {
-          // ⭐ 내 정보(인덱스 3번)를 눌렀을 때 로그인 여부에 따라 이동
           final bool status = await _memberService.checkLoginStatus();
 
           if (status) {
             final userInfo = await _memberService.getUserInfo();
             if (!mounted) return;
+
+            // ⭐ [수정 핵심] MyPageScreen으로 넘어갈 때 role 정보를 userInfo에서 가져와서 넣어줌!
             await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => MyPageScreen(
-                    userName: userInfo['name'] ?? "사용자",
-                    userEmail: userInfo['email'] ?? ""
+                  userName: userInfo['name'] ?? "사용자",
+                  userEmail: userInfo['email'] ?? "",
+                  userPhone: userInfo['phone'] ?? "010-0000-0000",
+                  userRole: userInfo['role'] ?? "USER", // 👈 빈 값('')에서 수정됨!
                 ),
               ),
             );
@@ -273,7 +293,7 @@ class _MainScreenState extends State<MainScreen> {
             if (!mounted) return;
             await Navigator.pushNamed(context, '/logout_mypage');
           }
-          _checkLoginStatus(); // 돌아온 후 상단 앱바 갱신
+          _checkLoginStatus();
         }
       },
       items: const [
