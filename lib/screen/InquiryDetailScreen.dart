@@ -105,6 +105,7 @@ class InquiryDetailScreen extends StatelessWidget {
       child: Center(
 
 
+
       ),
     );
   }
