@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart'; // TableCalendar 위젯
 
+import '../../common/constants/app_colors.dart';
+import '../../common/widget/app_base_layout.dart';
+import '../../common/widget/common_button.dart';
 import '../controller/calendar_controller.dart'; // range 선택 상태 관리 컨트롤러
 import '../util/car_format_util.dart';
 
@@ -71,8 +74,8 @@ class CalendarScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('캘린더')),
+    return AppBaseLayout(
+      title: '캘린더',
       body: Column(
         children: [
           Padding(
@@ -295,7 +298,7 @@ class CalendarScreen extends StatelessWidget {
                                             width: 5,
                                             height: 5,
                                             decoration: const BoxDecoration(
-                                              color: Colors.blueAccent,
+                                              color: AppColors.primary,
                                               shape: BoxShape.circle,
                                             ),
                                           ),
@@ -380,14 +383,14 @@ class CalendarScreen extends StatelessWidget {
                                 // range 하이라이트 배경의 높이 비율 (1.0 = 셀 전체 높이 차지)
                                 rangeHighlightScale: 1.0,
                                 // range 시작~끝 사이 배경 색상 (연한 파랑)
-                                rangeHighlightColor: Colors.blueAccent.withValues(alpha: 0.2),
+                                rangeHighlightColor: AppColors.primary.withValues(alpha: 0.2),
                                 // range 시작일 글씨 색 (흰색 계열 - 파란 원 위에 표시되므로)
                                 rangeStartTextStyle: TextStyle(
                                   color: Colors.white,
                                 ),
                                 // range 시작일 원 스타일 (blueAccent - 오늘 점 색상과 통일)
                                 rangeStartDecoration: BoxDecoration(
-                                  color: Colors.blueAccent,
+                                  color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
                                 // range 끝일 글씨 색 (시작일과 동일)
@@ -396,7 +399,7 @@ class CalendarScreen extends StatelessWidget {
                                 ),
                                 // range 끝일 원 스타일 (시작일과 동일)
                                 rangeEndDecoration: BoxDecoration(
-                                  color: Colors.blueAccent,
+                                  color: AppColors.primary,
                                   shape: BoxShape.circle,
                                 ),
                               ),
@@ -560,9 +563,8 @@ class CalendarScreen extends StatelessWidget {
                             ],
                           ),
                           const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
+                          CommonButton(
+                              text: '확인',
                               onPressed: () {
                                 // 날짜 미선택
                                 if (controller.rangeStart == null ||
@@ -601,8 +603,6 @@ class CalendarScreen extends StatelessWidget {
                                 }
                                 Navigator.pop(context, true);
                               },
-                              child: const Text('확인'),
-                            ),
                           ),
                         ],
                       ),
