@@ -14,7 +14,7 @@ class CarReservationController with ChangeNotifier {
   bool _isLoading = false;
   bool _hasNext = false;
   int? _nextCursorStatusOrder;
-  String? _nextCursorEndDate;
+  String? _nextCursorStartDate;
   int? _nextCursorId;
   String? _errorMessage;
 
@@ -49,7 +49,7 @@ class CarReservationController with ChangeNotifier {
     _errorMessage = null;
     _myRentals = [];
     _nextCursorStatusOrder = null;
-    _nextCursorEndDate = null;
+    _nextCursorStartDate = null;
     _nextCursorId = null;
     _hasNext = false;
     notifyListeners();
@@ -65,7 +65,7 @@ class CarReservationController with ChangeNotifier {
       _myRentals = result.response!.reservation;
       _hasNext = result.response!.hasNext;
       _nextCursorStatusOrder = result.response!.nextCursorStatusOrder;
-      _nextCursorEndDate = result.response!.nextCursorEndDate;
+      _nextCursorStartDate = result.response!.nextCursorStartDate;
       _nextCursorId = result.response!.nextCursorId;
     }
     notifyListeners();
@@ -80,7 +80,7 @@ class CarReservationController with ChangeNotifier {
     final result = await _service.fetchMyRentals(
       CarReservationCursorRequestDTO(
         cursorStatusOrder: _nextCursorStatusOrder,
-        cursorEndDate: _nextCursorEndDate,
+        cursorStartDate: _nextCursorStartDate,
         cursorId: _nextCursorId,
       ),
     );
@@ -92,7 +92,7 @@ class CarReservationController with ChangeNotifier {
       _myRentals.addAll(result.response!.reservation);
       _hasNext = result.response!.hasNext;
       _nextCursorStatusOrder = result.response!.nextCursorStatusOrder;
-      _nextCursorEndDate = result.response!.nextCursorEndDate;
+      _nextCursorStartDate = result.response!.nextCursorStartDate;
       _nextCursorId = result.response!.nextCursorId;
     }
     notifyListeners();

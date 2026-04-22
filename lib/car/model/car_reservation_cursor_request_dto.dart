@@ -1,12 +1,12 @@
 class CarReservationCursorRequestDTO {
   final int? cursorStatusOrder;
-  final String? cursorEndDate;
+  final String? cursorStartDate;
   final int? cursorId;
   final int size;
 
   const CarReservationCursorRequestDTO({
     this.cursorStatusOrder,
-    this.cursorEndDate,
+    this.cursorStartDate,
     this.cursorId,
     this.size = 10,
   });
@@ -14,7 +14,7 @@ class CarReservationCursorRequestDTO {
   Map<String, dynamic> toQueryParameters() {
     return {
       if (cursorStatusOrder != null) 'cursorStatusOrder': cursorStatusOrder,
-      if (cursorEndDate != null) 'cursorEndDate': cursorEndDate,
+      if (cursorStartDate != null) 'cursorStartDate': cursorStartDate,
       if (cursorId != null) 'cursorId': cursorId,
       'size': size,
     };

@@ -4,14 +4,14 @@ class CarReservationCursorResponseDTO {
   final List<CarRentalReservationDTO> reservation;
   final bool hasNext;
   final int? nextCursorStatusOrder;
-  final String? nextCursorEndDate;
+  final String? nextCursorStartDate;
   final int? nextCursorId;
 
   CarReservationCursorResponseDTO({
     required this.reservation,
     required this.hasNext,
     this.nextCursorStatusOrder,
-    this.nextCursorEndDate,
+    this.nextCursorStartDate,
     this.nextCursorId,
   });
 
@@ -22,7 +22,7 @@ class CarReservationCursorResponseDTO {
           .toList(),
       hasNext: json['hasNext'],
       nextCursorStatusOrder: json['nextCursorStatusOrder'] as int?,
-      nextCursorEndDate: json['nextCursorEndDate'] as String?,
+      nextCursorStartDate: json['nextCursorStartDate'] as String?,
       nextCursorId: json['nextCursorId'] as int?,
     );
   }
