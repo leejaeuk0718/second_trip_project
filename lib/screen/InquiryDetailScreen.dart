@@ -104,6 +104,7 @@ class InquiryDetailScreen extends StatelessWidget {
       decoration: BoxDecoration(color: Colors.grey[100], borderRadius: BorderRadius.circular(12)),
       child: Center(
 
+
       ),
     );
   }
