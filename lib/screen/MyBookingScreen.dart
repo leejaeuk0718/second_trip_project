@@ -61,7 +61,7 @@ class MyBookingScreen extends StatelessWidget {
                 crossAxisCount: 2,
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
-                childAspectRatio: 0.95,
+                childAspectRatio: 0.85,
                 children: [
                   // ── 항공 → AppColors.primary (빨강) ─────
                   _CategoryCard(
@@ -152,15 +152,26 @@ class _CategoryCard extends StatelessWidget {
             children: [
 
               // ── 아이콘 영역 ──────────────────────────
-              Container(
-                width: double.infinity,
-                padding: const EdgeInsets.symmetric(vertical: 24),
-                color: bgColor,
-                child: Icon(icon, size: 36, color: color),
+              Expanded(
+                flex: 4,
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 24),
+                  color: bgColor,
+                  child: Icon(icon, size: 36, color: color),
+                ),
               ),
+
+              // Container(
+              //   width: double.infinity,
+              //   padding: const EdgeInsets.symmetric(vertical: 24),
+              //   color: bgColor,
+              //   child: Icon(icon, size: 36, color: color),
+              // ),
 
               // ── 텍스트 영역 ──────────────────────────
               Expanded(
+                flex: 6,
                 child: Padding(
                   padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
                   child: Column(
