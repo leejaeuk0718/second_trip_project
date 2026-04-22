@@ -37,6 +37,9 @@ class _MyReservationScreenState extends State<MyReservationScreen> {
   @override
   void initState() {
     super.initState();
+    if (widget.type == BookingType.rental) {
+      _scrollController.addListener(_onRentalScroll);
+    }
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _mid = await SecureStorageHelper().getUserMid() ?? '';
 
@@ -53,12 +56,6 @@ class _MyReservationScreenState extends State<MyReservationScreen> {
           break;
         case BookingType.rental:
           context.read<CarReservationController>().fetchMyRentals();
-          _scrollController.addListener(() {
-            if (_scrollController.position.pixels >=
-                _scrollController.position.maxScrollExtent - 200) {
-              context.read<CarReservationController>().loadMoreRentals();
-            }
-          });
           break;
         case BookingType.hotel:
         // TODO: 숙소 담당자 - 숙소 예약 목록 API 연결
@@ -68,6 +65,13 @@ class _MyReservationScreenState extends State<MyReservationScreen> {
           break;
       }
     });
+  }
+
+  void _onRentalScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<CarReservationController>().loadMoreRentals();
+    }
   }
 
   void _refreshList() {
@@ -373,9 +377,9 @@ class _MyReservationScreenState extends State<MyReservationScreen> {
     );
   }
 
-  bool _isPastRental(String endDate) {
+  bool _isPastRental(String startDate) {
     try {
-      return DateTime.parse(formatDateString(endDate, '.', '-'))
+      return DateTime.parse(formatDateString(startDate, '.', '-'))
           .isBefore(DateTime.now());
     } catch (_) {
       return false;
@@ -391,7 +395,7 @@ class _MyReservationScreenState extends State<MyReservationScreen> {
   }
 
   Widget _rentalCard(BuildContext context, CarRentalReservationDTO item, CarReservationController controller) {
-    final isPast = _isPastRental(item.endDate);
+    final isPast = _isPastRental(item.startDate);
     final statusLabel = isPast ? '지난예약' : _rentalStatusLabel(item.status);
     final color = isPast ? Colors.grey : Colors.orange[700]!;
 
