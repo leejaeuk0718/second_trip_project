@@ -17,9 +17,9 @@
 
 
 ## 🛠 기술 스택
-- Frontend**: Flutter
-- Backend**: Spring Boot
-- Architecture**: MVVM 패턴, Riverpod (상태 관리)
+- **Frontend**: Flutter
+- **Backend**: Spring Boot
+- **Architecture**: MVVM 패턴, Riverpod (상태 관리)
 
 ## 📸 미리보기
 ![메인 화면 UI](./assets/images/002main.png)
@@ -34,7 +34,14 @@
 * Dart SDK
 * Android Studio 또는 VS Code
 
-- 원격 저장소 클론하기(각각 프런트와 백엔드)
+**환경 변수 파일 가이드 (.env)**:
+- API 키나 DB 접속 정보는 보안상 Git에 올리지 않습니다. `.env` 파일을 만들어 아래와 같이 사용해주세요
+* BASE_URL=http://00.000.000.000:8080
+* TOUR_API_KEY=test_key
+
+### 원격 저장소 클론하기
  ```bash
    git clone https://github.com/jsg213213-boop/second_trip_project
-   git clone https://github.com/parkjihyo-808/second_trip_project_back
+   cd second_trip_project
+   flutter pub get
+
