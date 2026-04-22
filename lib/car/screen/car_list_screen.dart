@@ -5,6 +5,8 @@ import 'package:shimmer/shimmer.dart';
 import 'package:second_trip_project/car/model/company_car_dto.dart';
 import 'package:second_trip_project/car/model/car_search_cursor_response.dart';
 
+import '../../common/constants/app_colors.dart';
+import '../../common/widget/app_base_layout.dart';
 import '../controller/car_rent_list_controller.dart';
 import '../util/car_format_util.dart';
 import 'car_reservation_screen.dart';
@@ -82,13 +84,11 @@ class _CarListScreenState extends State<CarListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<CarRentListController>(
-      builder: (context, controller, _) {
-        return Scaffold(
-          appBar: AppBar(title: Text('${widget.region} 렌터카')),
-          body: _buildBody(controller),
-        );
-      },
+    return AppBaseLayout(
+      title: '${widget.region} 렌터카',
+      body: Consumer<CarRentListController>(
+        builder: (context, controller, _) => _buildBody(controller),
+      ),
     );
   }
 
@@ -299,6 +299,7 @@ class _CarCardState extends State<_CarCard> with AutomaticKeepAliveClientMixin {
                     )
                   : TextButton(
                       onPressed: _loadMoreOptions,
+                      style: TextButton.styleFrom(foregroundColor: AppColors.primary),
                       child: Text('더보기 ${min(_optionLoadSize, car.remainingCount)}개'),
                     ),
             if (_selectedCar != null)  //회사 차량의 데이터가 있다면
@@ -323,7 +324,7 @@ class _CarCardState extends State<_CarCard> with AutomaticKeepAliveClientMixin {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF004680),
+                      backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                     ),
                     child: Text('${_selectedCar!.companyName} 예약하기'),
@@ -356,9 +357,9 @@ class _CompanyPriceTile extends StatelessWidget {
         margin: const EdgeInsets.symmetric(vertical: 4),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFFE8F0FE) : Colors.transparent,
+          color: isSelected ? AppColors.primaryLight : Colors.transparent,
           border: Border.all(
-            color: isSelected ? const Color(0xFF004680) : Colors.grey.shade300,
+            color: isSelected ? AppColors.primary : AppColors.border,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
@@ -372,7 +373,7 @@ class _CompanyPriceTile extends StatelessWidget {
               style: TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: isSelected ? const Color(0xFF004680) : Colors.black87,
+                color: isSelected ? AppColors.primary : Colors.black87,
               ),
             ),
           ],

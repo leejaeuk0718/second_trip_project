@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../common/constants/app_colors.dart';
+import '../../common/widget/app_base_layout.dart';
+import '../../common/widget/common_button.dart';
 import '../controller/calendar_controller.dart';
 import '../controller/car_rent_home_controller.dart';
 import '../util/car_format_util.dart';
@@ -49,8 +52,8 @@ class _CarRentHomeScreenState extends State<CarRentHomeScreen> {
 
     final regions = context.watch<CarRentHomeController>().regions;
 
-    return Scaffold(
-      appBar: AppBar(title: const Text('렌터카 예약')),
+    return AppBaseLayout(
+      title: '렌터카 예약',
       body: Padding(
             padding: const EdgeInsets.all(24.0),
             child: Column(
@@ -116,50 +119,38 @@ class _CarRentHomeScreenState extends State<CarRentHomeScreen> {
                 const Spacer(),
 
                 // 확인 버튼
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: (_selectedRegion == null ||
-                            calendar.rangeStart == null ||
-                            calendar.rangeEnd == null)
-                        ? null
-                        : () {
-                            final startDate = formatDate(
-                              calendar.rangeStart!,
-                              showWeekDay: false,
-                              separator: '-',
-                            );
-                            final endDate = formatDate(
-                              calendar.rangeEnd!,
-                              showWeekDay: false,
-                              separator: '-',
-                            );
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => ChangeNotifierProvider.value(
-                                  value: context.read<CarRentListController>(),
-                                  child: CarListScreen(
-                                    region: _selectedRegion!,
-                                    startDate: startDate,
-                                    endDate: endDate,
-                                    startTime: calendar.startTime,
-                                    endTime: calendar.endTime,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueAccent,
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                CommonButton(
+                  text: '확인',
+                  isEnabled: _selectedRegion != null &&
+                      calendar.rangeStart != null &&
+                      calendar.rangeEnd != null,
+                  onPressed: () {
+                    final startDate = formatDate(
+                      calendar.rangeStart!,
+                      showWeekDay: false,
+                      separator: '-',
+                    );
+                    final endDate = formatDate(
+                      calendar.rangeEnd!,
+                      showWeekDay: false,
+                      separator: '-',
+                    );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => ChangeNotifierProvider.value(
+                          value: context.read<CarRentListController>(),
+                          child: CarListScreen(
+                            region: _selectedRegion!,
+                            startDate: startDate,
+                            endDate: endDate,
+                            startTime: calendar.startTime,
+                            endTime: calendar.endTime,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: const Text('확인', style: TextStyle(fontSize: 18)),
-                  ),
+                    );
+                  },
                 ),
               ],
             ),
@@ -184,7 +175,7 @@ class _DateTile extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey.shade400),
+          border: Border.all(color: AppColors.border),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Row(
@@ -192,7 +183,7 @@ class _DateTile extends StatelessWidget {
             const Icon(
               Icons.calendar_today,
               size: 20,
-              color: Colors.blueAccent,
+              color: AppColors.primary,
             ),
             const SizedBox(width: 12),
             Expanded(
