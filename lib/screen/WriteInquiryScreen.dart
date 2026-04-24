@@ -141,3 +141,4 @@ class _WriteInquiryScreenState extends State<WriteInquiryScreen> {
     );
   }
 }
+

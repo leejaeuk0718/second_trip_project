@@ -43,6 +43,7 @@ class InquiryDetailScreen extends StatelessWidget {
                   ),
                   child: Text(
 
+
                     status,
                     style: TextStyle(color: isDone ? classicBlue : Colors.grey[600], fontSize: 10, fontWeight: FontWeight.bold),
                   ),
