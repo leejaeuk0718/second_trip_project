@@ -39,3 +39,4 @@ class InquiryService {
     }
   }
 }
+

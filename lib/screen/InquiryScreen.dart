@@ -154,6 +154,7 @@ class _InquiryScreenState extends State<InquiryScreen> {
               builder: (context) => InquiryDetailScreen(inquiryData: item),
             ),
 
+
           );
         },
       ),

@@ -25,6 +25,7 @@ class _TotalSearchScreenState extends State<TotalSearchScreen> {
         index: _currentIndex,
         children: _pages,
       ),
+
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
